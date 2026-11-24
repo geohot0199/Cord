@@ -21,6 +21,12 @@ The Windows files and the Android APK are built from this repository by
 The APK is a preview build: install it by allowing installs from your browser
 or file manager, then open Nūs. It is not on Google Play yet.
 
+## Website
+
+The marketing site lives in [`site/`](site/): one static page, no build step.
+`cd site && python3 -m http.server 4173` to preview it. See
+[`site/README.md`](site/README.md).
+
 ## What is new in this build
 
 - **The on-screen pointer is a blue triangle.** When the Knot points at a
