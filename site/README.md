@@ -40,6 +40,13 @@ the folder verbatim.
   `pranavfromthegrowth@gmail.com`. Swap it for a support inbox if you prefer.
 - **Copy that ships vs. copy that is coming** — anything not built yet is
   labelled "Where it's heading". Keep that honest as features land.
+- **Free caps and Pro** — the pricing section, the FAQ and the fine print state
+  the free-plan caps (3 syllabus imports, 10 questions/day, 1 connected account,
+  1 automation rule, 20 Companion minutes/day, 7 days of history, 512 MB) and
+  that a BYO key does not lift them, since `src/limits.js` gates on
+  `license.isPro` alone. `src/limits.js` is the source of truth: if the numbers
+  change there, change them in `site/index.html` (free plan card, "What are the
+  free limits?" answer, fine print).
 
 The feedback form has no backend: it opens the visitor's mail app with the note
 filled in, or copies it to the clipboard. If you want it to POST instead, point

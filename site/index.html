@@ -259,7 +259,7 @@
             <li>Voice actions, Hands and walkthroughs</li>
             <li>Your folders of notes and docs, mapped</li>
             <li>On top of every Windows app</li>
-            <li>Works with a free Gemini or Nvidia key</li>
+            <li>Free plan caps: 3 syllabus imports, 10 questions a day, 1 connected account, 20 minutes of Companion a day, 512 MB of storage</li>
           </ul>
           <a class="btn btn--ink btn--full" href="#download">Download</a>
         </article>
@@ -267,14 +267,15 @@
         <article class="plan plan--accent" data-reveal>
           <h3>The AI</h3>
           <p class="plan__price">Your key<span class="plan__unit"> or free</span></p>
-          <p class="plan__sub">You choose who answers, and who bills you.</p>
+          <p class="plan__sub">Paste your own key and skip the subscription. Your provider bills you; Nūs never does.</p>
           <ul class="ticks">
-            <li>Simple asks like “open YouTube” use no balance</li>
-            <li>Gemini and Nvidia have free keys</li>
-            <li>Anthropic, OpenAI and Claude Code all work</li>
-            <li>Keys are encrypted on your device</li>
+            <li><b>No subscription, no account needed</b> to paste a key</li>
+            <li>Anthropic, Gemini, OpenAI, Nvidia, or Claude Code</li>
+            <li>Any OpenAI-compatible endpoint: OpenRouter, a university gateway, Ollama</li>
+            <li>Simple asks like “open YouTube” use no balance at all</li>
+            <li>Keys are encrypted on your device, never sent to Nūs</li>
           </ul>
-          <a class="btn btn--ink btn--full" href="#setup">See the setup</a>
+          <a class="btn btn--ink btn--full" href="#questions">How the key works</a>
         </article>
 
         <article class="plan" data-reveal>
@@ -291,7 +292,9 @@
       </div>
 
       <p class="fine">
-        Providers set their own prices. Nūs has no server of its own in the middle:
+        <b>Your own key is enough to use Nūs — no subscription, no account.</b>
+        Signing in is only needed for Pro, which lifts the free caps above.
+        Providers set their own prices, and Nūs has no server of its own in the middle:
         your notes, routines, transcripts and keys stay on your computer.
         <a href="#questions">What leaves my computer?</a>
       </p>
@@ -325,7 +328,7 @@
             <span class="setup__n">2</span>
             <div>
               <h3>Add your AI key</h3>
-              <p>Under <b>Settings → AI provider</b>, paste a Gemini, Anthropic, OpenAI or Nvidia key. Keys are encrypted with your OS keychain and never shown again.</p>
+              <p>Under <b>Settings → AI provider</b>, paste a Gemini, Anthropic, OpenAI or Nvidia key — no account, no subscription. Already paying for another provider? <b>Settings → API</b> takes any OpenAI-compatible endpoint, including a local Ollama. Keys are encrypted with your OS keychain and never shown again.</p>
             </div>
           </li>
           <li class="setup__step" data-pane="win-3">
@@ -545,25 +548,38 @@
           <div class="faq__tags" id="faqTags">
             <button class="tag is-on" data-tag="all">All</button>
             <button class="tag" data-tag="price">Free</button>
+            <button class="tag" data-tag="key">Own key</button>
             <button class="tag" data-tag="local">Private</button>
             <button class="tag" data-tag="mac">Mac</button>
             <button class="tag" data-tag="install">Won’t install</button>
           </div>
-          <p class="faq__count" id="faqCount">14 questions</p>
+          <p class="faq__count" id="faqCount">17 questions</p>
         </div>
 
         <div class="faq__list" id="faqList">
           <details data-tags="price install">
             <summary>Is it free?</summary>
-            <div class="ans"><p>Yes, to start. Nūs Companion is a free download with no account required to install. Answers come from your own AI key — Gemini and Nvidia both offer free keys — or from a local endpoint you run yourself. Nūs charges nothing for the app and takes no cut of your model usage.</p></div>
+            <div class="ans"><p>Yes, to start. Nūs Companion is a free download with no account required to install. Answers come from your own AI key — Gemini and Nvidia both offer free keys — or from a local endpoint you run yourself. Nūs charges nothing for the app and takes no cut of your model usage. The free plan is capped (3 syllabus imports, 10 questions a day, 20 Companion minutes a day); Pro lifts the caps, and it is optional.</p></div>
           </details>
           <details data-tags="local price">
             <summary>Is it local? What leaves my computer?</summary>
             <div class="ans"><p>Your notes, routines, transcripts and keys stay on your PC. A question, and the screenshot that goes with it, goes only to the AI provider you configured — straight to them, or through your own endpoint. There is no Nūs server in between. Folders you turn on share short excerpts the same way, and only when they help answer. Usage stats are anonymous and can be switched off in Settings.</p></div>
           </details>
-          <details data-tags="price local">
+          <details data-tags="price key">
+            <summary>Can I paste my own API key and skip the subscription?</summary>
+            <div class="ans"><p>Yes. Paste an Anthropic, Gemini, OpenAI or Nvidia key under <b>Settings → AI provider</b>, or point <b>Settings → API</b> at any OpenAI-compatible endpoint — OpenRouter, a university gateway, or a local Ollama/vLLM server on <code>http://localhost:11434/v1</code>. Nūs charges nothing and takes no cut: your provider bills you directly. You don’t need an account for this. Signing in is only how Pro works, and Pro is optional.</p></div>
+          </details>
+          <details data-tags="price">
+            <summary>What are the free limits? Does my own key lift them?</summary>
+            <div class="ans"><p>The free plan is capped at 3 AI syllabus imports, 10 questions a day, 1 connected account, 1 automation rule, 20 minutes of Companion use a day, 7 days of history and 512 MB of storage. Caps are counted on your own computer. Your own key does <b>not</b> lift them — only Pro ($9.99 a month) does, because the caps are about the app, not about who answers. Every cap resets on its own schedule; nothing is deleted when you hit one.</p></div>
+          </details>
+          <details data-tags="price key">
+            <summary>Do I need an account?</summary>
+            <div class="ans"><p>No, not to use Nūs. It opens as a local profile, and everything — your semester, notes, folders, keys — works without signing in. An account (an email and a plan, nothing else) is only needed for Pro, so your plan can follow you to another PC. Accounts are never required to paste a key.</p></div>
+          </details>
+          <details data-tags="price local key">
             <summary>Do I need an AI key?</summary>
-            <div class="ans"><p>For answers, yes — one provider is enough. The back of the app ships with adapters for Gemini, Anthropic, OpenAI and any OpenAI-compatible endpoint (OpenRouter, a university gateway, vLLM, Ollama), plus Claude Code if it is already signed in on your machine. Simple asks like “open YouTube” or “a bit quieter” never touch a model. Speech to text runs locally, so it needs no key at all.</p></div>
+            <div class="ans"><p>For answers, yes — one provider is enough, and your own key needs no subscription. The back of the app ships with adapters for Gemini, Anthropic, OpenAI and any OpenAI-compatible endpoint (OpenRouter, a university gateway, vLLM, Ollama), plus Claude Code if it is already signed in on your machine. Simple asks like “open YouTube” or “a bit quieter” never touch a model. Speech to text runs locally, so it needs no key at all.</p></div>
           </details>
           <details data-tags="local install">
             <summary>Is it only for students?</summary>

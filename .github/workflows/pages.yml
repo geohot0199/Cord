@@ -1,0 +1,86 @@
+# Publishes site/ to GitHub Pages.
+#
+# The repository's Pages source is set to "GitHub Actions" (build_type:
+# workflow), which means nothing is served until a workflow uploads an artifact
+# and calls deploy-pages. Without this file the site URL answers 404 while the
+# host itself is perfectly healthy — that is exactly what "the website is down"
+# looks like.
+#
+# Runs on every push to main that touches site/, and on demand.
+name: Deploy website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+# Never let two deploys race on the same Pages environment.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Check the site files exist
+        run: |
+          set -euo pipefail
+          for f in site/index.html site/styles.css site/main.js site/assets/bust.webp; do
+            if [ ! -f "$f" ]; then echo "missing $f" >&2; exit 1; fi
+          done
+          echo "site/ looks complete"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      # site/ becomes the published root, so a URL like
+      # https://<owner>.github.io/NUS/assets/bust.webp resolves as written.
+      # The root index.html signpost is not included: with this workflow the
+      # site is already at the top level.
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Smoke-test the published page
+        run: |
+          set -euo pipefail
+          url="${{ steps.deployment.outputs.page_url }}"
+          echo "published at $url"
+          # Pages can take a few seconds to switch over; retry briefly.
+          for attempt in 1 2 3 4 5 6; do
+            code=$(curl -sS -o /tmp/index.html -w '%{http_code}' "$url") || code=000
+            if [ "$code" = "200" ] && grep -q "NŪS" /tmp/index.html; then
+              echo "site is live ($code)"
+              exit 0
+            fi
+            echo "attempt $attempt: HTTP $code"
+            sleep 10
+          done
+          echo "published page did not answer with the site content" >&2
+          exit 1

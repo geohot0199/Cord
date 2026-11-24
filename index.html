@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Nūs — a more capable you</title>
+
+<!--
+  GitHub Pages on this repo is configured as: source = main branch, path = "/"
+  (build_type "legacy"). That means Pages serves the repository root, and the
+  marketing site lives in site/. Without this file the root has no index.html
+  and the published URL answers 404.
+
+  This page is a signpost, not the site: it forwards to /site/ and keeps the
+  canonical link pointed there. It costs one request and works with zero
+  settings changes.
+
+  If you later switch Settings → Pages → Source to "GitHub Actions", the
+  workflow in .github/workflows/pages.yml publishes site/ as the root and this
+  file simply stops being served. Nothing else needs to change.
+-->
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<link rel="canonical" href="./site/" />
+<meta http-equiv="refresh" content="0; url=./site/" />
+<link rel="icon" href="./site/assets/favicon.png" />
+<style>
+  :root { color-scheme: dark; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: grid;
+    place-items: center;
+    background: #f1eee6;
+    color: #0a0c11;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    text-align: center;
+    padding: 24px;
+  }
+  .mark {
+    width: 64px; height: 64px; margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #0a0c11 url("site/assets/bust.webp") center 26% / 190% no-repeat;
+  }
+  h1 {
+    font-family: "Iowan Old Style", Palatino, Georgia, serif;
+    font-weight: 400;
+    font-size: 1.6rem;
+    letter-spacing: 0.24em;
+    margin: 0 0 10px;
+  }
+  p { margin: 0; color: #4a4d57; font-size: 0.92rem; }
+  a {
+    color: #3549e5;
+    text-underline-offset: 3px;
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 0.95rem;
+  }
+  noscript p { margin-top: 8px; }
+</style>
+</head>
+<body>
+  <main>
+    <div class="mark" aria-hidden="true"></div>
+    <h1>NŪS</h1>
+    <p>Taking you to the site…</p>
+    <a href="./site/">Open Nūs</a>
+    <noscript><p>JavaScript is off — the link above takes you there.</p></noscript>
+  </main>
+  <script>
+    // Instant forward, keeping any campaign labels (?utm_source=…, ?aid=…)
+    // that brought the visitor here so attribution still works downstream.
+    (function () {
+      var target = "./site/" + (window.location.search || "") + (window.location.hash || "");
+      window.location.replace(target);
+    })();
+  </script>
+</body>
+</html>
