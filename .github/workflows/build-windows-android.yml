@@ -80,8 +80,22 @@ jobs:
       - name: Write an empty local config
         run: node scripts/write-empty-config.js
 
+      - name: Android environment
+        run: |
+          echo "::notice::ANDROID_HOME=$ANDROID_HOME"
+          echo "::notice::platforms=$(ls -1 "$ANDROID_HOME/platforms" 2>/dev/null | tr '\n' ',')"
+          echo "::notice::build-tools=$(ls -1 "$ANDROID_HOME/build-tools" 2>/dev/null | tr '\n' ',')"
+          echo "::notice::java=$(java -version 2>&1 | tr '\n' ' ')"
+
       - name: Build the Android APK
-        run: npm run mobile:apk
+        run: |
+          set +e
+          npm run mobile:apk 2>&1 | tee /tmp/android-build.log
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ]; then
+            echo "::error::Android build failed: $(tail -c 2500 /tmp/android-build.log | tr '\n' ' ')"
+            exit "$code"
+          fi
 
       - name: Collect the APK
         run: |
