@@ -27,9 +27,33 @@ Any static file server works; the page is plain HTML, CSS and one script.
 
 ## Deploy
 
-Publish the `site/` folder with GitHub Pages (branch → `/site`), Netlify,
-Cloudflare Pages, or any bucket. `.nojekyll` is already here so Pages serves
-the folder verbatim.
+Two supported shapes, both already in the repo:
+
+1. **GitHub Actions (preferred).** Settings → Pages → Source = **GitHub
+   Actions**. Then `.github/workflows/pages.yml` publishes `site/` as the site
+   root on every push to `main` that touches `site/`, and smoke-tests the
+   published URL (it fails the run if the URL doesn't return the site).
+2. **Branch publishing (what this repo is set to today).** Settings → Pages →
+   Source = **Deploy from a branch**, `main` / `/`. With that setting Pages
+   serves the repository root, so the tiny root `index.html` forwards to
+   `./site/` and carries the query string along (Instagram `?utm_source=…` and
+   `?aid=…` labels survive). Never delete that file while this setting is in
+   use — it is the only thing preventing a 404.
+
+Other hosts (Netlify, Cloudflare Pages, any bucket) should publish `site/`
+directly; `.nojekyll` is included so Pages serves the folder verbatim.
+
+### Checking it is actually up
+
+The URL is only healthy if it answers 200 **and** contains the word NŪS:
+
+```sh
+curl -s -o /tmp/i.html -w '%{http_code}\n' https://geohot0199.github.io/NUS/ && grep -c NŪS /tmp/i.html
+```
+
+A 404 here while `main` has `index.html` means the Pages source is wrong
+(root must be the branch the file lives on) or the last Pages build failed —
+check Actions → **pages build and deployment**.
 
 ## Things to update
 
