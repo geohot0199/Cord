@@ -12,9 +12,7 @@ leaves your computer except through the calls you configure below (see
 |---|---|
 | **Windows 10/11 installer** | [Nus-Setup.exe](https://github.com/geohot0199/Cord/releases/latest/download/Nus-Setup.exe) |
 | **Windows portable** (no install) | [Nus-Portable.exe](https://github.com/geohot0199/Cord/releases/latest/download/Nus-Portable.exe) |
-| **Android APK** | [Nus-Android.apk](https://github.com/geohot0199/Cord/releases/latest/download/Nus-Android.apk) |
-| macOS Apple Silicon | [Nus-arm64.dmg](https://github.com/potlakai/nus-desktop/releases/latest/download/Nus-arm64.dmg) |
-| macOS Intel | [Nus-x64.dmg](https://github.com/potlakai/nus-desktop/releases/latest/download/Nus-x64.dmg) |
+
 
 The Windows files and the Android APK are built from this repository by
 [the Windows + Android workflow](.github/workflows/build-windows-android.yml).
