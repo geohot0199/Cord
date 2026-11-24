@@ -46,8 +46,10 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      # The whole site/ folder becomes the published root, so a URL like
+      # site/ becomes the published root, so a URL like
       # https://<owner>.github.io/NUS/assets/bust.webp resolves as written.
+      # The root index.html signpost is not included: with this workflow the
+      # site is already at the top level.
       - name: Upload the site
         uses: actions/upload-pages-artifact@v3
         with:
