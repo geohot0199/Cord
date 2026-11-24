@@ -1,0 +1,145 @@
+name: Build Windows and Android
+
+# Manual build for the Windows installer and the Android APK. The artifacts are
+# collected here and attached to a GitHub release by hand, so a release is only
+# public when the files have been checked.
+#
+# src/config.js is gitignored because it carries the Supabase/Google client
+# ids. A public build does not need them: sign-in and live calendar stay off and
+# the app runs local-first, so this workflow writes an empty config.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write an empty local config
+        run: node scripts/write-empty-config.js
+
+      - name: Test
+        run: npm test
+
+      - name: Build Windows installer
+        run: npm run dist -- --publish never
+
+      - name: Collect Windows artifacts
+        run: |
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item dist/Nus-Setup.exe release/Nus-Setup.exe
+          Copy-Item dist/Nus-Portable.exe release/Nus-Portable.exe
+          if (Test-Path dist/latest.yml) { Copy-Item dist/latest.yml release/latest.yml }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nus-windows
+          path: release/*
+          if-no-files-found: error
+          retention-days: 14
+
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write an empty local config
+        run: node scripts/write-empty-config.js
+
+      - name: Android environment
+        run: |
+          echo "::notice::ANDROID_HOME=$ANDROID_HOME"
+          echo "::notice::platforms=$(ls -1 "$ANDROID_HOME/platforms" 2>/dev/null | tr '\n' ',')"
+          echo "::notice::build-tools=$(ls -1 "$ANDROID_HOME/build-tools" 2>/dev/null | tr '\n' ',')"
+          echo "::notice::java=$(java -version 2>&1 | tr '\n' ' ')"
+
+      - name: Build the Android APK
+        run: |
+          set +e
+          npm run mobile:apk 2>&1 | tee /tmp/android-build.log
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ]; then
+            echo "::error::Android build failed: $(tail -c 2500 /tmp/android-build.log | tr '\n' ' ')"
+            exit "$code"
+          fi
+
+      - name: Collect the APK
+        run: |
+          mkdir -p release
+          cp android/app/build/outputs/apk/debug/app-debug.apk release/Nus-Android.apk
+          ls -lh release/Nus-Android.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nus-android
+          path: release/Nus-Android.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    needs: [windows, android]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release
+          cp artifacts/nus-windows/* release/
+          cp artifacts/nus-android/Nus-Android.apk release/
+          ls -lh release
+          notes="docs/release-notes-${GITHUB_REF_NAME#v}.md"
+          args=(--generate-notes)
+          if [ -f "$notes" ]; then
+            args=(--notes-file "$notes")
+          fi
+          gh release create "$GITHUB_REF_NAME" release/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Nūs $GITHUB_REF_NAME" \
+            "${args[@]}" \
+            --verify-tag

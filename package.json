@@ -1,0 +1,47 @@
+{
+  "name": "nus-desktop",
+  "version": "0.2.9",
+  "description": "Nūs: the semester organizer that runs on your own AI, on your own machine.",
+  "main": "src/main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron . --smoke",
+    "tour": "electron . --tour",
+    "test:db": "node --test src/db.test.js",
+    "dist": "electron-builder --win --config electron-builder.config.js",
+    "dist:mac": "electron-builder --mac --config electron-builder.config.js",
+    "test": "node --test \"src/*.test.js\" \"companion/test/*.test.js\"",
+    "dist:check": "node scripts/package-security-check.js",
+    "setup:voice": "node scripts/setup-voice.js",
+    "mobile:web": "node scripts/build-mobile-web.js",
+    "mobile:sync": "npm run mobile:web && cap sync android",
+    "mobile:apk": "npm run mobile:sync && cd android && ./gradlew assembleDebug"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Pranav Desu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/potlakai/nus-desktop.git"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.120.0",
+    "@capacitor/android": "^7.6.10",
+    "@capacitor/core": "^7.6.10",
+    "@google/genai": "^2.18.0",
+    "@supabase/supabase-js": "^2.112.3",
+    "electron-updater": "^6.8.9",
+    "mammoth": "^1.12.1",
+    "openai": "^7.5.0",
+    "pdf-parse": "^1.1.1",
+    "sql.js": "^1.14.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.6.10",
+    "electron": "^43.4.0",
+    "electron-builder": "^26.15.3"
+  }
+}
