@@ -1,1 +1,234 @@
-# Cord
+# Nūs Desktop
+
+The semester organizer that runs on your own AI, on your own machine. Import a
+real syllabus, see your whole semester as a living map, and let Nūs propose the
+next move. Nothing is saved without your review, and your coursework never
+leaves your computer except through the calls you configure below (see
+[Privacy](#privacy) for the anonymous usage stats and how to turn them off).
+
+## Download
+
+| Platform | Download |
+|---|---|
+| **Windows 10/11 installer** | [Nus-Setup.exe](https://github.com/geohot0199/Cord/releases/latest/download/Nus-Setup.exe) |
+| **Windows portable** (no install) | [Nus-Portable.exe](https://github.com/geohot0199/Cord/releases/latest/download/Nus-Portable.exe) |
+| **Android APK** | [Nus-Android.apk](https://github.com/geohot0199/Cord/releases/latest/download/Nus-Android.apk) |
+| macOS Apple Silicon | [Nus-arm64.dmg](https://github.com/potlakai/nus-desktop/releases/latest/download/Nus-arm64.dmg) |
+| macOS Intel | [Nus-x64.dmg](https://github.com/potlakai/nus-desktop/releases/latest/download/Nus-x64.dmg) |
+
+The Windows files and the Android APK are built from this repository by
+[the Windows + Android workflow](.github/workflows/build-windows-android.yml).
+The APK is a preview build: install it by allowing installs from your browser
+or file manager, then open Nūs. It is not on Google Play yet.
+
+## What is new in this build
+
+- **The on-screen pointer is a blue triangle.** When the Knot points at a
+  control, the strand now ends in a solid blue arrowhead instead of a glowing
+  dot. The strand keeps its task colour (guide blue, ask silver, remember
+  violet, reading amber); the pointer is always blue so it is easy to follow.
+- **Android app.** The same semester dashboard, local storage, and API
+  integration run on Android through Capacitor. See [Android](#android).
+- **API integration.** Connect any OpenAI-compatible endpoint in
+  **Settings → API** and Nūs will use it for syllabus reading, Ask, chat, and
+  voice replies. See [API integration](#api-integration).
+
+
+## You bring the AI (required)
+
+Nūs has no server and no bundled model. It needs two keys, and they do
+different jobs:
+
+**1. Claude, for the desktop app.** Reading syllabi, the Ask bar, and the chat
+thread all run on Anthropic's Claude, pinned to the mid-tier **Sonnet** model
+so a semester of use stays affordable.
+- If **Claude Code** is installed on your machine, Nūs finds it automatically
+  and uses your existing subscription. Nothing to paste.
+- Otherwise, get an **Anthropic API key** (console.anthropic.com) and paste it
+  in **Settings → AI provider**. It is encrypted on this device with your OS
+  keychain and only ever used to call Anthropic.
+
+**2. Gemini, for the Companion overlay.** The floating Knot that watches your
+screen and listens in meetings runs on its own key so live answers stay fast
+and cheap. Get a free **Google Gemini** key (aistudio.google.com/apikey) and
+paste it in **Settings → Companion AI key**, or in the Knot's own gear icon.
+The Gemini key covers the Companion's answers. Speech to text needs no key at
+all: Nūs transcribes on your own machine with whisper.cpp (see **Voice** below)
+and only falls back to a Gemini or OpenAI key if the local engine is missing.
+(OpenAI, Anthropic, and Nvidia keys also work for answering.)
+
+The first-run walkthrough points at both cards.
+
+## API integration
+
+Already pay for another model, or want to run one on your own machine? Open
+**Settings → API → Bring your own model** and enter:
+
+- **Base URL** — an OpenAI-compatible endpoint, for example
+  `https://api.openai.com/v1`, `https://openrouter.ai/api/v1`, or
+  `http://localhost:11434/v1` for Ollama.
+- **Model** — the model id that endpoint expects, for example `gpt-4o-mini`,
+  `openai/gpt-4o-mini`, or `llama3.1`.
+- **API key** — the bearer token for that endpoint. It is encrypted on the
+  device with the OS keychain and never written to the coursework database.
+
+Press **Save integration**, then **Test**. Once connected, the endpoint powers
+syllabus extraction, the Ask bar, chat, and voice replies. Remove it at any
+time to go back to Claude or Gemini. Nūs speaks the common
+`POST /chat/completions` format, so university gateways, company proxies,
+OpenRouter, vLLM, and local Ollama servers all work. Requests go directly from
+the device to the endpoint you typed; there is no Nūs relay.
+
+The Android app uses the same card. Its key lives in the app's private storage
+on the phone. The exact request shape and storage notes are in
+[docs/api-integration.md](docs/api-integration.md).
+
+## Install and run
+
+Grab `Nus-Setup.exe` (installer) or `Nus-Portable.exe` (no install) on
+Windows, or `Nus-arm64.dmg` (Apple Silicon) / `Nus-x64.dmg` (Intel) on a Mac,
+from a release, or run from source:
+
+```
+npm install
+npm start
+```
+
+### Android
+
+The Android app is the same renderer in a Capacitor shell: Today, Map,
+Calendar, Smart tasks, Semester, Knot, Email, Connections, History, and
+Settings all open on a phone. The desktop-only Companion overlay is off; the
+blue triangle pointer is still used wherever the app points at something. Data
+stays in the app's private storage, and the **Settings → API** card accepts the
+same OpenAI-compatible endpoint as desktop.
+
+Build it from source with Android Studio or the command line:
+
+```
+npm install
+npm run mobile:apk
+```
+
+The debug APK lands at
+`android/app/build/outputs/apk/debug/app-debug.apk`. It is a preview build, not
+a Play Store release; Android will ask you to allow installs from unknown
+sources the first time.
+
+`npm test` runs the full assertion suite. `npm run smoke` boots and exits.
+`npm run tour` replays the walkthrough. `npm run dist` builds the installers.
+`npm run setup:voice` downloads the local speech engine (whisper.cpp plus the
+base English model, about 65 MB, once) into `vendor/`. The installers bundle the
+engine and fetch the model on first use, so only source builds need this step.
+
+### Why Windows warns you about the download
+
+The installer is not code signed yet, so SmartScreen shows **"Windows
+protected your PC", Publisher: Unknown publisher** the first time you run
+`Nus-Setup.exe`. That is the absence of a certificate, not a detection. Click
+**More info**, then **Run anyway**. The build is reproducible from this repo,
+every release lists the SHA-512 of its artifacts in `latest.yml`, and Windows
+Defender scans it clean. Signing is wired and waiting on a certificate; see
+`docs/release.md`.
+
+### Why your Mac says it could not verify the app
+
+Same reason. The Mac build is not notarized yet, so the first open says
+**"Apple could not verify Nus is free of malware"**. Click **Done**, open
+**System Settings › Privacy & Security**, scroll to the Security section and
+press **Open Anyway** next to Nus, then confirm once. That is the only time
+it asks. The Mac build cannot update itself until it is notarized, so a new
+version means downloading the dmg again. Local voice (the on-device Whisper
+engine) is Windows-only for now; everything else is the same app.
+
+### Free and Pro
+
+Nūs Free runs a whole semester with honest caps: 3 AI syllabus imports, 10
+questions a day, 1 connected account, 1 automation rule, 20 Companion minutes
+a day with 7 days of history, 512 MB of storage. Pro ($9.99 a month) lifts
+them. Caps are counted locally; the plan itself is tied to your Nūs account
+(your account is an email and a plan, nothing else) and paid through Stripe
+Checkout. Card details never touch this app.
+
+## What's inside
+
+- **Today**: your dashboard. The Ask bar takes plain requests ("push the calc
+  homework to Friday", "email my professor about an extension") and proposes
+  the exact change before anything is written.
+- **Voice**: click the Knot on Today and just talk. Speech to text runs locally
+  with whisper.cpp, so no key is needed and no audio leaves your computer. Your
+  words and the streamed reply appear under the Knot, which lights up as it
+  listens, thinks, and speaks. Files Nūs reads while thinking surface as stars
+  on the constellation. Talking over a spoken reply interrupts it.
+- **Map**: every course, source, and open task as a draggable knowledge graph.
+- **Calendar / Smart tasks / Semester**: deadlines, task breakdowns with
+  review, GPA projection that never guesses missing weights.
+- **Knot**: the Companion pane and a persistent chat thread that can create
+  tasks, move dates, and draft emails, each with a confirm step.
+- **Email**: a professor-email drafter that works with no connection at all.
+  Add your sending addresses and any draft opens pre-filled in Gmail with
+  **Open in Gmail** (no Gmail account connection needed). Outlook connects
+  read-only for the inbox brief and your writing style; sending through
+  Outlook is a separate opt-in.
+
+## The Companion
+
+The Knot floats on your desktop, keeps running after you close the dashboard,
+and comes back from the tray. **Turn off Companion** on the Knot pane removes
+it completely and releases the hotkeys until you turn it back on.
+
+Click the Knot and type what you need ("show me how to add a chart"), or hold
+the push-to-talk key and say it. The Knot reads the screen once, a strand runs
+to the one control to click, and a blue triangle pointer at the tip says the
+step. Click it and the Knot re-reads the screen for the next step; Esc winds it
+back. When the task is done you can Keep the steps, and the same ask in the same
+app replays them without a model call.
+
+Point at a button, an error, or any spot on the Knot's display and press
+`Ctrl+Shift+T`: the strand runs to that control, you type a question about it,
+and the answer lands at the tip with "Walk me through it" to turn it into a
+step-by-step guide. Sensitive fields such as password boxes are refused.
+Pointing works on the display the Knot lives on; other monitors are next.
+
+| Keys | Action |
+|---|---|
+| `Ctrl+Shift+T` (Windows) | Point at what you need help with |
+| `Ctrl+Shift+Space` (`⌘⇧Space` on a Mac) | Hide or show the overlay |
+| `Ctrl+Shift+X` (`⌘⇧X`) | Panic: stop listening and vanish |
+| `Ctrl+Enter` (`⌘Enter`) | What should I do? (rebindable in Companion settings) |
+
+The overlay is concealed from screen sharing and recordings: the Knot, the
+strand and the bubbles do not appear in what you share. Follow the rules of
+every meeting, class, interview, or assessment you are in.
+
+## Privacy
+
+Local-first by design. The database lives at `%APPDATA%\Nus\data\nus.db`
+(`~/Library/Application Support/Nus/data/nus.db` on a Mac) and
+everything Nūs knows stays on this device. The outbound calls are the AI
+providers you configured, the integrations you explicitly connect, and, if you
+sign in, the Supabase account check (email and plan, never content) plus Stripe
+when you buy Pro. There is no cloud sync of your coursework.
+
+Anonymous usage stats (which features get used, on a random install id) help
+us see what works. Your coursework and what you type stay on your device. Turn
+it off in Settings. The full list of what is sent, where the install id lives,
+and how to switch it off is in [docs/stats.md](docs/stats.md).
+
+## Stack
+
+Electron, vanilla JS, sql.js (WASM SQLite). One process, two windows: the
+Companion overlay ships inside the app, so there is one installer, one
+settings store, one runtime.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+The OAuth client IDs in `src/config.js` are gitignored but ship inside the
+installer, deliberately: Google documents desktop OAuth clients as public
+clients whose secret is not confidential, and Calendar and Outlook would not
+work for anyone without them. `src/shipped-secrets.test.js` is the tripwire
+that fails the build if a genuinely confidential credential ever lands in a
+packaged file. Bring your own credentials by creating that file locally;
+`docs/credentials-needed.md` walks through it.

@@ -1,0 +1,9 @@
+node_modules/
+src/config.js
+dist/
+*.log
+supabase/.temp/
+vendor/
+
+# Capacitor-generated mobile web root
+www/
