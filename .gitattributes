@@ -1,0 +1,12 @@
+# Keep source and shell scripts LF on every platform. Windows CI checks out
+# with autocrlf otherwise, which breaks the regex contract tests and gradlew.
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.jar binary
+*.woff binary
+*.woff2 binary
